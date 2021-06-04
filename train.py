@@ -2,10 +2,11 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
-from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import cross_val_score,cross_val_predict
 from sklearn.ensemble import RandomForestClassifier
 import matplotlib.pyplot as plt
 import seaborn as sns
+import scikitplot as skplt
 import numpy as np
 # Set random seed
 seed = 42
@@ -16,12 +17,19 @@ mnist = fetch_openml('mnist_784', version=1, as_frame=False)
 X, y = mnist["data"], mnist["target"]
 X_train, X_test, y_train, y_test = X[:60000], X[60000:], y[:60000], y[60000:]
 
-rf=RandomForestClassifier(n_estimators=100)
+rf=RandomForestClassifier(n_estimators=100,random_state=seed)
 
-train_score = cross_val_score(rf, X_train, y_train)
-print(np.mean(train_score))
+train_score = cross_val_score(rf, X_train, y_train,cv=5)
+
+predictions = cross_val_predict(rf, X_train, y_train,cv=5)
+
+print(f"Mean Cross Validation Score : {100 * np.mean(train_score):.2f}")
 with open("metrics.txt", 'w') as outfile:
-        outfile.write("Mean Cross Validation Scoreachieved: %2.1f%%\n" % np.mean(train_score))
+        outfile.write(f"Mean Cross Validation Score : {100 * np.mean(train_score):.2f}")
+
+skplt.metrics.plot_confusion_matrix(y_train, predictions, normalize=True)
+plt.savefig("Confusion_Matrix.png")
+
 exit()
 
 
