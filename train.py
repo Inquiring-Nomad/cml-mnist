@@ -27,13 +27,15 @@ predictions = cross_val_predict(rf, X_train, y_train,cv=5)
 with open("metrics.txt", 'w') as outfile:
         outfile.write(f"Mean Cross Validation Score : {100 * np.mean(train_score):.2f}\n")
 
-skplt.metrics.plot_confusion_matrix(y_train, predictions, normalize=True)
-plt.savefig("train_confusion_matrix.png")
 
 
-# Test set
+
+
 rf.fit(X_train, y_train)
-test_score = rf.score(X_test,y_test)
+# Test set
+test_predictions = rf.predict(X_test)
+test_acc = accuracy_score(y_test,test_predictions)
 with open("metrics.txt", 'a') as outfile:
-        outfile.write(f"Test Score : {100 * test_score:.2f}\n")
-
+        outfile.write(f"Test Score : {100 * test_acc:.2f}\n")
+skplt.metrics.plot_confusion_matrix(y_test, test_predictions, normalize=True)
+plt.savefig("test_confusion_matrix.png")
