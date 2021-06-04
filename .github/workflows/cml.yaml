@@ -28,6 +28,8 @@ jobs:
           echo "## Metrics" > report.md
           cat metrics.txt >> report.md
 
-          echo "## Visualisation train set" >> report.md
+          echo "## Train confusion matrix" >> report.md
           cml-publish train_confusion_matrix.png --md >> report.md
+
+
           cml-send-comment report.md
